@@ -1,0 +1,82 @@
+		    
+		    
+		     实验一 DEBUG 的使用
+实验目的:
+    1.掌握汇编程序的编辑,编译,连接和执行的全过程;
+    2.学习和掌握用DEBUG调试程序的方法.
+实验内容:
+    1.用编辑软件,输入以下汇编语言源程序:
+
+    DAT    SEGMENT
+    A      DB  20    ;(自定)
+    B      DB  15    ;(自定)
+    Y      DB  3 DUP(0)
+    Z      DB  0,0
+    DAT    ENDS
+
+    STA    SEGMENT STACK
+	   DW  50 DUP(?)
+    STA    ENDS
+    COD    SEGMENT
+    ASSUME    CS:COD,DS:DAT
+    STAR      PROC    FAR
+	      PUSH    DS
+	      XOR     AX,AX
+	      PUSH    AX
+	      MOV     AX,DAT
+	      MOV     DS,AX
+	      MOV     AX,STA
+	      MOV     SS,AX
+	      MOV     AL,A
+	      MOV     Z,AL
+	      MOV     Z+1,AL
+	      CALL    SUB1
+	      MOV     AL,B
+	      MOV     Z,AL
+	      MOV     Z+1,AL
+	      CALL    SUB1
+	      MOV     AL,A
+	      MOV     Z,AL
+	      MOV     AL,B
+	      MOV     Z+1,AL
+	      CALL    SUB1
+	      ADD     WORD PTR Y,AX
+	      ADC     BYTE PTR[Y+2],0
+	      RET
+    STAR      ENDP
+
+    SUB1      PROC
+	      MOV     AL,Z
+	      MOV     AH,Z+1
+	      MUL     AH
+	      ADD     WORD PTR Y,AX
+	      ADC     BYTE PTR[Y+2],0
+	      RET
+    SUB1      ENDP
+    COD       ENDS
+	      END     STAR
+
+    2.通过编译,连接形成可执行文件.
+    3.用 DEBUG 将可执行文件调入,并进行调试.
+     (1)用 D 命令观察数据区在内存中的具体内容,记录单元 A 和 B 的具体地址.
+     (2)用 U 命令对目标代码反汇编,观察反汇编后的结果.注意发现源程序的起始
+ 位置, 并记录这个起始地址.
+     (3)用 T 命令作单步跟踪调试.比较每条指令执行后的结果和原来的理解是否
+ 一致.得出程序运行的结果:它们是写在什么单元,具体内容是什么; 并判断结果是
+ 否正确.
+     (4)在子程序 SUB1 的入口处设一断点,用 G 命令执行程序. 在断点处观察堆
+ 栈的内容,比较堆栈的内容和程序返回地址是否一致.
+     (5)用 E 命令修改单元 A,B 的内容,重新执行程序,并记录结果.
+     (6)用 M 命令和 A 命令对程序进行修改: 将主程序中最后两条指令 (ADD 和
+ ADC) 修改为一条 CALL SUB1 指令,重新执行程序.
+     (7)退出 DEBUG.
+    4.重新使用编辑软件,把源程序最后一句中的 STAR 去掉.再次生成可执行文件,
+ 并用 DEBUG 调入内存.当使用 U 命令时,显示的结果与前一次(未加 STAR) 的结果
+ 有何不同?
+
+预习题:
+    1.熟悉常用的 DEBUG 命令.
+    2.阅读并分析程序的功能.
+    3.若 SS=2000H,SP=FFFFH, 向堆栈中压入 4 字节数据后,如何用 D 命令显示压
+ 入堆栈的内容?
+
